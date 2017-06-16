@@ -1,0 +1,664 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+      <script type="text/javascript" src="curve.min.js"></script>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+      
+	
+	
+
+    <canvas id="myCanvas" width="2000" height="2000"></canvas>
+    <script>
+        var textDraw='kangaroo'
+        var textDrawCount=8;
+        var poin=[90,70,105,50,120,70,160,110,180,70,190,50,200,70,202,150,190,200,160,150,130,120,120,140,118,180,100,200,90,180];
+        var arrN=[];
+        var arrK=[];
+      var canvas = document.getElementById('myCanvas');
+        var context = canvas.getContext('2d');
+        
+      function drawImage(imageObj) {
+        
+          var state=1;
+        var x = 0;
+        var y = 0;
+          var arr=new Array();
+          var divPoints=new Array();
+           var currentWord=0;
+          var currentBreakPoint=1;
+          var xToTravel=0;
+          var strucK =[20,20,90,70,110,30,120,50,125,110,180,50,210,30,190,70,140,140,190,180,205,230,155,180,120,130,118,180,100,230,90,180];
+          
+          var totalBreakPoints=15;
+          var curX=0;
+          var curY=0;
+       /*   context.beginPath();
+          context.moveTo(1600,1600);
+          context.quadraticCurveTo(1600,1580,1600,1560);
+          context.quadraticCurveTo(1620,1580,1640,1560);
+          context.quadraticCurveTo(1620,1600,1640,1640);
+          context.quadraticCurveTo(1620,1620,1600,1640);
+          context.quadraticCurveTo(1620,1620,1600,1600);
+          context.closePath();
+          context.fillStyle = '#8ED6FF';
+          context.fill(); */
+          
+        context.drawImage(imageObj, x, y);
+
+        var imageData = context.getImageData(x, y, imageObj.width, imageObj.height);
+         // context.clearRect(0,0,500,500);
+        var data = imageData.data;
+      //  var len=parseInt(data.length/180);
+          var count=0;
+          var countY=0;
+          var firstX ,firstY,lastX,lastY ;
+          
+        for(var i = 0; i < data.length; i += 4) {
+          
+        if(data[i]<5 && data[i+1]<5 && data[i+2]<5 ) {   // red
+           
+          data[i] = 255;
+          // green
+            data[i+1] = 0;
+          // blue
+          data[i + 2] = 0;
+            
+            count++;
+            lastX=i;
+            if(count==1) 
+                firstX=i ;
+        }
+        else{
+            data[i] = 0 ;
+          data[i + 1] = 255;
+          // blue
+          data[i + 2] = 0;
+           }
+        }  
+          var countEachY=0 ;
+          for (var c = 0; c < imageData.width; c ++) {
+              countEachY=0;
+             for (var r = c*4; r <= data.length; r += (4 * imageData.width )) {
+                  
+                 if(data[r]==255 && data[r+1]==0 && data[r+2]==0){
+                     if( r+(4*imageData.width)<=data.length && (data[r+(4*imageData.width)]==255 && data[r+(4*imageData.width)+1]==0 && data[r+(4*imageData.width)+2]==0))
+                       {  countEachY++;
+                        //alert("ho");
+                       }
+                     countY++;
+                     
+                     if(countY==1)
+                         firstY=r;
+                     lastY=r;
+                    
+                 }
+             
+        }    // console.log(countEachY);
+               arr.push(countEachY);
+              if(countEachY==71 || countEachY==114 ||countEachY==543 ||countEachY==298 )
+                {
+                     data[c*4] = 255;
+                      data[c*4+1] = 255;
+                      data[c*4+2] = 0;
+                }
+       }   
+          
+          
+          
+          // traversing image along edge
+          
+    /*      alert(data.length/4);
+          alert(imageData.width);
+          alert(imageData.height);
+          alert(imageData.width*imageData.height);
+      //    alert(firstY/4);
+          alert((firstY/4) % imageData.width);
+          alert(parseInt((firstY)/ (imageData.width*4)));
+          alert((lastY/4)%imageData.width);
+           alert(parseInt((lastY)/ (imageData.width*4))); */
+          
+         var firstY_xcord=(firstY/4) % imageData.width;
+         var firstY_ycord=parseInt((firstY)/ (imageData.width*4));
+         var lastY_xcord=(lastY/4)%imageData.width;
+         var lastY_ycord=parseInt((lastY)/ (imageData.width*4));
+          var objectWidth=lastY_xcord-firstY_xcord ;
+          var letterWidth=parseInt(objectWidth/8);
+          var scalingF =9.2;
+          for(var i=0;i<9;i++)
+              {
+                divPoints.push(1);
+              //   divPoints.push(firstY_xcord+(i+1)*letterWidth);
+                 //alert(divPoints[i]); 
+              }
+          divPoints[0]=121;
+          divPoints[1]=213;
+          divPoints[2]=275;
+          divPoints[3]=478;
+          divPoints[4]=646;
+          divPoints[5]=785;
+          divPoints[6]=880;
+          divPoints[7]=1016;
+          divPoints[8]=1133;
+          
+          var plusX=0;
+          var plusY=0;
+       /*   if(isEdge(imageData,l-(4 * imageData.width )))
+                  {  alert("1");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      
+                      
+                  }
+          if(isEdge(imageData,l-(4 * imageData.width )+4))
+                  {   alert("2");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      
+                  }
+          if(isEdge(imageData,l+4))
+                  {   alert("3");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      
+                  }  */
+          var l =firstY;
+          var curX=firstY_xcord;
+          var curY=firstY_ycord;
+          var nextX=0;
+          var nextY=0;
+          var nextl=0;
+          arrK.push(firstY_xcord);
+          arrK.push(firstY_ycord);
+          
+          var p=0;
+          var heightComp=0;
+        for(var d=0;d<12000;d++){
+            
+               
+            
+              
+                  letterWidth=divPoints[currentWord+1]-divPoints[currentWord];
+              
+              
+                      
+                    xToTravel=poin[currentBreakPoint*2]-poin[(currentBreakPoint-1)*2];
+                      xToTravel=parseInt((xToTravel/110)* letterWidth) ;
+                  
+            if(plusX==xToTravel)
+                {  
+                    if(state==1)
+                        {
+                //    alert(" State1 X " + xToTravel+" curX "+curX);
+                    arrK.push(curX);
+                    heightComp=calculateHeightPlus(imageData,l);
+                    var temp=parseInt(heightComp*((poin[currentBreakPoint*2+1]-50)/150));
+               //     alert(" a "+ (poin[currentBreakPoint*2+1]-50) +" b "+ temp+" y "+ heightComp +" curY " + curY);
+                    arrK.push(curY+temp);
+                 
+                    p=l+4*temp*imageData.width ;
+                     data[p]=0;
+                     data[p+1]=0;
+                     data[p+2]=255;
+                    
+                    currentBreakPoint++;
+                    plusX=0;
+                        }
+                    if(state==3)
+                        {
+                   //         alert(" state2 X " + xToTravel+" curX "+curX);
+                    arrK.push(curX);
+                            heightComp=calculateHeightMinus(imageData,l);
+                    var temp=parseInt(heightComp*((200-poin[currentBreakPoint*2+1])/150));
+                //  alert(" a "+ (200-poin[currentBreakPoint*2+1]) +" b "+ temp+" y "+ heightComp +" curY " + curY);
+                    arrK.push(curY-temp);
+                 
+                    p=l-4*temp*imageData.width ;
+                     data[p]=0;
+                     data[p+1]=0;
+                     data[p+2]=255;
+                    r=(4*imageData.width*(curY-temp)+(4*curX));
+                        data[r]=0;
+                     data[r+1]=255;
+                     data[r+2]=0;    
+                    currentBreakPoint++;
+                    plusX=0;
+                        }
+                }
+            if(curX==divPoints[currentWord+1])
+                {
+                    if(state==1)
+                       { state=2;
+                         nextX=curX;
+                        nextY=curY;
+                        nextl=l;
+                       }
+                    
+                    
+                }
+            if(curX==divPoints[currentWord] || curX-divPoints[currentWord]==1)
+                {
+                    if(state==3)
+                        state=4;
+                    
+                }
+            if(state==1)
+             {if(isEdge(imageData,l-(4 * imageData.width )))
+                  {  //alert("1");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                   l=l-(4 * imageData.width );
+                      
+                      plusY--;
+                      curY--;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+               
+                       if(isEdge(imageData,l-(4 * imageData.width )+4))
+                  {   //alert("2");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                   l=l-(4 * imageData.width )+4 ;
+                      
+                      plusX++;
+                      plusY--;
+                      curX++;
+                      curY--;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+                   
+               
+                       if(isEdge(imageData,l+4))
+                  {  // alert("3");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                   l=l+4;
+                     
+                      
+                      plusX++;
+                      curX++;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                       continue;
+                  }
+                   
+              
+                       
+                       if(isEdge(imageData,l+4+(4 * imageData.width )))
+                  {  
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                   l=l+4+(4 * imageData.width );
+                      
+                      plusY++;
+                      plusX++;
+                      curX++;
+                      curY++;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+                   
+              
+                      
+                       if(isEdge(imageData,l+(4 * imageData.width )))
+                  
+                  { // alert("5");
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                   l=l+(4 * imageData.width );
+                      
+                      plusY++;
+                      curY++;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+                   
+                  
+                  l=l-(4 * imageData.width );
+                  curY-- ;
+             }
+            
+            if(state==2)
+                {
+                    if(isEdge(imageData,l+(4 * imageData.width )))
+                        {
+                            l=l+(4 * imageData.width );
+                            
+                              plusY++;
+                              curY++;
+                        }
+                    else
+                        state=3;
+                }
+            
+            if(state==3)
+                {     
+                      if(isEdge(imageData,l+(4 * imageData.width )))
+                  {  //alert("1");
+                   l=l+(4 * imageData.width );
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      plusY++;
+                      curY++;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+               
+                       if(isEdge(imageData,l+(4 * imageData.width )-4))
+                  {   //alert("2");
+                   l=l+(4 * imageData.width )-4 ;
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      plusX--;
+                      plusY++;
+                      curX--
+                      curY++;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+                   
+               
+                       if(isEdge(imageData,l-4))
+                  {  // alert("3");
+                   l=l-4;
+                     
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      plusX--;
+                      curX--;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                       continue;
+                  }
+                   
+              
+                       
+                       if(isEdge(imageData,l-4-(4 * imageData.width )))
+                  {  
+                   l=l-4-(4 * imageData.width );
+                      data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+                      plusY--;
+                      plusX--;
+                      curX--;
+                      curY--;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+                   
+              
+                      
+                       if(isEdge(imageData,l-(4 * imageData.width )))
+                  
+                  { // alert("5");
+                   l=l-(4 * imageData.width );
+                      
+                      plusY--;
+                      curY--;
+                      if(poin[currentBreakPoint*2 +1]<poin[(currentBreakPoint-1)*2 +1])
+                          {
+                              arrN.push(curX);
+                              arrN.push(curY);
+                          }
+                      continue;
+                  }
+                   
+                  
+                  l=l+(4 * imageData.width );
+                    curY++;
+                  data[l]=255;
+                      data[l+1]=255;
+                      data[l+2]=0;
+             }
+            if(state==4)
+                {  
+                    if(isEdge(imageData,l-(4 * imageData.width )))
+                        {
+                            l=l-(4 * imageData.width );
+                            data[l]=255;
+                              data[l+1]=255;
+                              data[l+2]=0;
+                              plusY--;
+                              curY--;
+                        }
+                    else
+                        {   
+                            
+                            currentWord++;
+                            curX=nextX;
+                            curY=nextY;
+                            l=nextl;
+                            state=1;
+                            currentBreakPoint=1;
+                            alert("hello");
+                            drawletter(context);
+                            arrK=[];
+                            plusX=0;
+                        }
+                }
+                   
+            
+                }
+              
+            
+          
+          //traversing image along edge
+          
+        //marking division points
+          
+            
+            
+        /*  for (var c = 0; c < imageData.width; c ++) {
+               for (var r = c*4; r <= data.length; r += (4 * imageData.width )) {
+                   if(divPoints.indexOf(c)!= -1)
+                       {
+                           data[r]=0;
+                           data[r+1]=0;
+                           data[r+2]=255;
+                       }
+               }
+          } */
+        
+          // marking division points
+         // alert(count);
+        //  alert(firstX);
+          //alert(lastX);
+          //alert(firstY);
+          //alert(lastY);
+          
+          
+          //
+          
+        /*  data[firstX] = 0;
+          data[firstX+1] = 0;
+          data[firstX+2] = 255;
+          data[lastX] = 0;
+          data[lastX+1] = 0;
+          data[lastX+2] = 255;
+          
+          data[firstY] = 0;
+          data[firstY+1] = 0;
+          data[firstY+2] = 255;
+       */
+        //  data[lastY] = 0;
+        //  data[lastY+1] = 0;
+          //data[lastY+2] = 255;
+          
+          var c=0;
+        // overwrite original image
+      //    alert("length is "+arrK.length);
+          for(i=0;i<arrK.length;i++)
+            { console.log(arrK[i]);
+             c=c+arr[i];
+        //     alert(arrK[i]);
+            } 
+        //  alert(c);
+      /*    var myChart = new JSChart('chartcontainer', 'line');
+	myChart.setDataArray(arr);
+	myChart.draw(); */
+     //   
+          
+     //   context.putImageData(imageData, x, y);
+  drawletter(context);
+          
+      }
+      
+      var imageObj = new Image();
+     imageObj.onload = function() {
+        drawImage(this);
+      };
+     imageObj.src = 'kanoo1.jpg'; 
+      
+         function isEdge(imageData,r){
+         data=imageData.data;
+             if((data[r]==255 && data[r+1]==0 && data[r+2]==0) )
+                 return true;
+             else
+                 return false;
+        // alert("isedge")
+        // alert(data[r]+" "+data[r+1]+" "+data[r+2]);
+       /*  r=r+4;
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r-8;
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r-(4 * imageData.width );
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r+4 ;
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r+4;
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r+(8* imageData.width)
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r-4;
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         r=r-4;
+         if(data[r]==0 && data[r]==255 && data[r]==0)
+            return true ;
+         return false;
+         */
+         
+     } 
+        function drawletter(context){
+            
+         // context.clearRect(0,0,1500,1500);
+        context.beginPath();
+        
+        // optionally move to first point
+        context.curve(arrK, 0.45,50,true);  
+        // add cardinal spline to path
+        context.closePath();
+        context.fillStyle='#8ED6FF';
+        context.fill();
+       // context.stroke();      
+        }
+        function calculateHeightPlus(imageData,r)
+        {
+            countY=0;
+            data=imageData.data;
+            for(var i=0;i<1000;i++)
+                {
+           if((data[r+(4*imageData.width)]==255 && data[r+(4*imageData.width)+1]==0 && data[r+(4*imageData.width)+2]==0))
+                {
+                    countY++ ;
+                    r=r+(4*imageData.width);
+                    
+                }
+            
+        }return countY;
+        }
+        function calculateHeightMinus(imageData,r)
+        {
+            countY=0;
+            data=imageData.data;
+            for(var i=0;i<1000;i++)
+                {
+            if((data[r-(4*imageData.width)]==255 && data[r-(4*imageData.width)+1]==0 && data[r-(4*imageData.width)+2]==0))
+                {
+                    countY++ ;
+                     r=r-(4*imageData.width);
+                }
+           
+        } return countY;
+        }
+     //  var canvas = document.getElementById('myCanvas');
+     //   var ctx= canvas.getContext('2d');
+                        // stroke path
+       /* ctx.moveTo(90, 100);
+        ctx.lineTo(90,70);
+        ctx.quadraticCurveTo(110, 30, 120, 50);
+        ctx.quadraticCurveTo(125, 110, 180, 50);
+        ctx.quadraticCurveTo(210, 30, 190, 70);
+        ctx.quadraticCurveTo(140, 140, 190, 180);
+        ctx.quadraticCurveTo(205, 230, 155, 180);
+        ctx.quadraticCurveTo(120, 130, 120, 180);
+        ctx.quadraticCurveTo(115, 230, 90, 180);
+        ctx.lineTo(90,100);
+        ctx.fillStyle = '#8ED6FF';
+          ctx.fill(); */
+     
+        
+        
+    </script>
+  </body>
+</html>
